@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
-import User from '../../models/User.js';
+import User from '../../models/user.js';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 
@@ -47,6 +47,9 @@ const login = ("/login", async (req, res) => {
                 email: user.email,
             },
         };
+
+        // update the user's token and token expiration
+        await User.findByIdAndUpdate(user._id, { token, tokenExpiration: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) });
 
         res.status(200).cookie("token", token, options).json({ message: "User logged in successfully", success: true, data: response });
     } catch (error) {

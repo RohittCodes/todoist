@@ -10,9 +10,11 @@ const taskSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    isCompleted: {
-        type: Boolean,
-        default: false
+    status: {
+        type: String,
+        required: true,
+        enum: ["pending", "in-progress", "completed"],
+        default: "pending"
     },
     priority: {
         type: String,
