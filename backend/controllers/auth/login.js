@@ -48,6 +48,9 @@ const login = ("/login", async (req, res) => {
             },
         };
 
+        // update the user's token and token expiration
+        await User.findByIdAndUpdate(user._id, { token, tokenExpiration: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) });
+
         res.status(200).cookie("token", token, options).json({ message: "User logged in successfully", success: true, data: response });
     } catch (error) {
         console.error(error);
