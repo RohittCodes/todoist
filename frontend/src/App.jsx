@@ -1,32 +1,33 @@
-import { Button, ButtonGroup } from "@nextui-org/button"
-import { useEffect, useState } from "react"
-import { FaTwitter } from "react-icons/fa"
-import axios from "axios"
+import LoginPage from "./pages/auth/login"
+import RegisterPage from "./pages/auth/register"
+import DashboardPage from "./pages/dashboard"
+import { Routes, Route, useNavigate } from 'react-router-dom'
+import { useEffect } from "react"
+import useAuth from "./hooks/use-auth"
+import LandingPage from "./pages/landing"
 
 function App() {
-  const [users, setUsers] = useState([])
+  const { auth } = useAuth()
+  const navigate = useNavigate()
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/users")
-      .then(res => setUsers(res.data))
-      .catch(err => console.log(err))
-  }, [])
-
-  console.log(users)
+    if (auth.token) {
+      navigate("/dashboard")
+    } else {
+      // Navigate to login only if on dashboard route
+      if (window.location.pathname === "/dashboard") {
+        navigate("/login")
+      }
+    }
+  }, [auth, navigate])
 
   return (
-    <h1 className="text-3xl font-bold underline">
-      Hello world!
-      {users.map(user => (
-        <div key={user._id}>
-          <p>{user.name}</p>
-          <p>{user.email}</p>
-        </div>
-      ))}
-      <Button color="primary" isIconOnly>
-        <FaTwitter />
-      </Button>
-    </h1>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/dashboard" element={<DashboardPage />} />
+    </Routes>
   )
 }
 

@@ -36,29 +36,15 @@ const register = ("/register", async (req, res) => {
 
         await newUser.save();
 
-        const tokenData = {
-            id: newUser._id,
-            username: newUser.username,
-            email: newUser.email,
-        };
-
-        const token = await jwt.sign(tokenData, process.env.JWT_SECRET, { expiresIn: "3d" });
-
-        const options = {
-            expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-            httpOnly: true,
-        };
-
         const response = {
-            token,
             user: {
                 id: newUser._id,
-                username: user.username,
-                email: user.email,
+                username: newUser.username,
+                email: newUser.email,
             },
         };
 
-        res.status(200).cookie("token", token, options).json({ message: "User registered successfully", success: true, data: response });
+        res.status(200).json({ message: "User registered successfully", success: true, data: response });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server Error", success: false });
