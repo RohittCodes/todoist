@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import Logo from '../assets/logo.svg'
-import { Listbox, ListboxItem } from '@nextui-org/listbox'
-import { Button } from '@nextui-org/button'
+import { Listbox, ListboxItem, Button } from '@nextui-org/react'
 import { MdSpaceDashboard } from 'react-icons/md'
 import { IoCheckmarkDoneCircle, IoSettings } from 'react-icons/io5'
 import { RiProgress2Line } from 'react-icons/ri'
@@ -15,17 +14,20 @@ const Sidebar = () => {
         {
             title: "Dashboard",
             icon: <MdSpaceDashboard />,
-            link: "/dashboard"
+            link: "/dashboard",
+            link2: "/dashboard/"
         },
         {
             title: "Completed",
             icon: <IoCheckmarkDoneCircle />,
-            link: "/dashboard/completed"
+            link: "/dashboard/completed",
+            link2: "/dashboard/completed/"
         },
         {
             title: "In Progress",
             icon: <RiProgress2Line />,
-            link: "/dashboard/in-progress"
+            link: "/dashboard/in-progress",
+            link2: "/dashboard/in-progress/"
         },
     ]
 
@@ -43,7 +45,7 @@ const Sidebar = () => {
                 <div className="w-full h-full space-y-2">
                     {
                         sidebarItems.map((item, index) => (
-                            <Link to={item.link} key={index} className={`flex items-center space-x-2 p-2 rounded-md ${pathname === item.link ? 'bg-blue-500 text-white' : 'text-gray-600 hover:bg-blue-200 hover:text-gray-500'}`}>
+                            <Link key={index} to={item.link} className={`flex items-center space-x-2 p-2 rounded-md ${pathname === item.link || pathname === item.link2 ? 'bg-blue-500 text-white' : 'text-gray-600 hover:bg-blue-200 hover:text-gray-500'}`}>
                                 {item.icon}
                                 <span>{item.title}</span>
                             </Link>
@@ -52,7 +54,7 @@ const Sidebar = () => {
                 </div>
             </div>
             <div className="w-full flex flex-col space-y-2">
-                <Link to="/dashboard/settings" className={`flex items-center space-x-2 p-2 rounded-md ${pathname === "/dashboard/settings" ? 'bg-gray-600 text-white' : 'text-gray-600 hover:bg-gray-200 hover:text-gray-500'}`}>
+                <Link to="/dashboard/settings" className={`flex items-center justify-between px-4 space-x-2 py-2 rounded-md ${pathname === "/dashboard/settings" ? 'bg-gray-600 text-white' : 'text-gray-600 hover:bg-gray-200 hover:text-gray-500'}`}>
                     Settings
                     <IoSettings />
                 </Link>

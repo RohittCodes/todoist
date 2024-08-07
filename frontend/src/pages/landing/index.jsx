@@ -1,13 +1,15 @@
 import React, { useState } from 'react'
 import LandingNav from './components/navbar'
 import ExampleImage from '../../assets/example.png'
-import { Button, ButtonGroup } from '@nextui-org/button'
 import { Link } from 'react-router-dom'
 import {
   FaQuoteLeft, FaQuoteRight
 } from 'react-icons/fa'
 import {
-  Accordion, AccordionItem
+  Accordion, 
+  AccordionItem,
+  Button,
+  ButtonGroup
 } from '@nextui-org/react'
 
 const LandingPage = () => {
