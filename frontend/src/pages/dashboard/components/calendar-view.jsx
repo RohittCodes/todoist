@@ -12,7 +12,6 @@ import {
 } from '@nextui-org/react'
 import { useState, useCallback } from 'react'
 import { today, getLocalTimeZone } from "@internationalized/date";
-import { RiLoaderLine } from 'react-icons/ri';
 import { IoEye, IoWarning } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 
@@ -161,9 +160,9 @@ const CalendarView = () => {
   }, []);
 
   return (
-    <div className="w-full h-full bg-neutral-100 space-y-4">
-      <div className="flex w-full h-full justify-between space-x-4 pt-4">
-        <div className="flex items-center h-full">
+    <div className="w-full h-full bg-neutral-100">
+      <div className="flex w-full h-full justify-between space-x-4 pt-2">
+        <div className="flex items-start">
           <Calendar
             value={focusedDate}
             onChange={(date) => setFocusedDate(date)}

@@ -9,6 +9,7 @@ import {
 } from "@nextui-org/react";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { getLocalTimeZone, now } from "@internationalized/date";
+import AddTaskModal from '../modals/add-task';
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -51,15 +52,12 @@ const DashboardNav = () => {
             </NavbarContent>
             <NavbarContent justify="end">
                 <NavbarItem>
-                    <Button auto className="text-blue-500 rounded-md bg-gray-100 border border-gray-200 space-x-2">
-                        <IoMdAddCircleOutline size={24} />
-                        Add New
-                    </Button>
+                    <AddTaskModal />
                 </NavbarItem>
                 <NavbarItem>
                 <User   
-                    name="Jane Doe"
-                    description="Product Designer"
+                    name={user.username}
+                    description={user.email}
                     avatarProps={{
                         src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
                     }}
