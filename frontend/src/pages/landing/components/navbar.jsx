@@ -1,6 +1,6 @@
 import Logo from '../../../assets/h-logo.svg'
 import { Link } from 'react-router-dom'
-import { Button } from '@nextui-org/button'
+import { Button } from '@nextui-org/react'
 
 const LandingNav = () => {
   return (

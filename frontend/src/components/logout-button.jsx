@@ -1,4 +1,4 @@
-import { Button } from '@nextui-org/button'
+import { Button } from '@nextui-org/react'
 import Cookies from 'js-cookie'
 import { IoLogOut } from 'react-icons/io5'
 

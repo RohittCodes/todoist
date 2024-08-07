@@ -1,9 +1,12 @@
-import {
-    Card, CardHeader, CardBody, CardFooter
-} from "@nextui-org/card";
-import { Divider } from "@nextui-org/divider";
-import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
+import { 
+    Divider,
+    Card,
+    CardHeader,
+    CardBody,
+    CardFooter,
+    Input,
+    Button
+} from "@nextui-org/react";
 import { Link } from "react-router-dom";
 import Logo from "../../assets/logo.svg";
 import { useForm } from "react-hook-form";
@@ -26,7 +29,6 @@ const LoginPage = () => {
                     "Content-Type": "application/json",
                 },
             });
-            // console.log(response.data);
             const { token, user } = response.data.data;
             setAuth({ token, user });
             Cookies.set("token", token, { expires: 3 });

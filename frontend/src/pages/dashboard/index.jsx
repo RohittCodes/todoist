@@ -1,29 +1,55 @@
 import React from 'react'
 import Sidebar from '../../components/sidebar'
+import Dashboard from './main'
+import Completed from './completed'
+import InProgress from './in-progress'
+import Settings from './settings'
 
 const DashboardPage = () => {
 
   const pathname = window.location.pathname
 
+  // map routes for cleaner code and to avoid the not found page for / and /dashboar, /dashboard/completed and /dashboard/completed/ and others
+
+  const routes = [
+    {
+      href: "/dashboard",
+      href2: "/dashboard/",
+      content: <Dashboard />
+    },
+    {
+      href: "/dashboard/completed",
+      href2: "/dashboard/completed/",
+      content: <Completed />
+    },
+    {
+      href: "/dashboard/in-progress",
+      href2: "/dashboard/in-progress/",
+      content: <InProgress />
+    },
+    {
+      href: "/dashboard/settings",
+      href2: "/dashboard/settings/",
+      content: <Settings />
+    }
+  ]
+
   return (
     <div className="flex h-screen bg-neutral-100">
       <Sidebar />
-      <div className="flex flex-col w-full h-full p-4">
-        {pathname === "/dashboard" && (
-          <h1 className="text-2xl font-bold text-neutral-800">Dashboard</h1>
-        )}
-        {pathname === "/dashboard/completed" && (
-          <h1 className="text-2xl font-bold text-neutral-800">Completed</h1>
-        )}
-        {pathname === "/dashboard/in-progress" && (
-          <h1 className="text-2xl font-bold text-neutral-800">In Progress</h1>
-        )}
-        {pathname === "/dashboard/settings" && (
-          <h1 className="text-2xl font-bold text-neutral-800">Settings</h1>
-        )}
-        {pathname !== "/dashboard" && pathname !== "/dashboard/completed" && pathname !== "/dashboard/in-progress" && pathname !== "/dashboard/settings" && (
-          <h1 className="text-2xl font-bold text-neutral-800">Page Not Found</h1>
-        )}
+      <div className="flex flex-col w-full h-full">
+        {
+          routes.map((route, index) => {
+            if (pathname === route.href || pathname === route.href2) {
+              return (
+                <div key={index} className="flex items-center justify-center w-full h-full">
+                  {route.content}
+                </div>
+              )
+            }
+            return null
+          })
+        }
       </div>
     </div>
   )

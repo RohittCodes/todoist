@@ -1,9 +1,12 @@
 import {
-    Card, CardHeader, CardBody, CardFooter
-} from "@nextui-org/card";
-import { Divider } from "@nextui-org/divider";
-import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
+    Card,
+    CardHeader,
+    CardBody,
+    CardFooter,
+    Divider,
+    Input,
+    Button
+} from "@nextui-org/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Logo from "../../assets/logo.svg";
@@ -17,7 +20,6 @@ const RegisterPage = () => {
     const onSubmit = async (data) => {
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/register`, data);
-            console.log(response.data);
             navigate("/login");
         } catch (error) {
             console.log(error);
