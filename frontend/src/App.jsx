@@ -12,9 +12,10 @@ function App() {
 
   useEffect(() => {
     if (auth.token) {
-      navigate("/dashboard")
+      if (window.location.pathname === "/login" || window.location.pathname === "/register") {
+        navigate("/dashboard")
+      }
     } else {
-      // Navigate to login only if on dashboard route
       if (window.location.pathname === "/dashboard") {
         navigate("/login")
       }
@@ -26,7 +27,11 @@ function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
+      {
+        auth.token && (
+          <Route path="/dashboard/*" element={<DashboardPage />} />
+        )
+      }
     </Routes>
   )
 }
