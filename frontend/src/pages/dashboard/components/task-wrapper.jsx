@@ -28,13 +28,19 @@ const statusColorMap = {
 };
 
 const TaskWrapper = (
-  { task, loading }
+  { task, loading, isDetails }
 ) => {
 
   const { day, month, year } = task.dueDate;
   const dueDate = new Date(year, month, day);
   const { day: startDay, month: startMonth, year: startYear } = task.startDate;
   const startDate = new Date(startYear, startMonth, startDay);
+  
+  const { hour, minute } = task.endTime;
+  // stringified time
+  const dueTime = hour + ":" + minute;
+  const { hour: startHour, minute: startMinute } = task.startTime;
+  const startTime = startHour + ":" + startMinute;
 
   if (loading) {
     return (
@@ -77,7 +83,7 @@ const TaskWrapper = (
           </div>
           <div className="flex justify-end gap-2">
             {
-              task.status === "completed" && (
+              task.status === "completed" && !isDetails && (
                 <div className="flex items-center gap-2">
                   <MarkInProgress task={task} />
                   <MarkPending task={task} />
@@ -85,13 +91,22 @@ const TaskWrapper = (
               )
             }
             {
-              task.status === "inprogress" && (
+              task.status === "inprogress" && !isDetails && (
                 <MarkComplete task={task} />
               )
             }
             {
-              task.status === "pending" && (
+              task.status === "pending" && !isDetails && (
                 <MarkInProgress task={task} />
+              )
+            }
+            {
+              isDetails && (
+                <div className="flex items-center gap-2">
+                  <MarkInProgress task={task} />
+                  <MarkComplete task={task} />
+                  <MarkPending task={task} />
+                </div>
               )
             }
           </div>
@@ -107,11 +122,24 @@ const TaskWrapper = (
               {dueDate.toDateString()}
             </Chip>
           </div>
-          <Link to={`/dashboard/task/${task._id}`}>
-            <div className="text-blue-500 rounded-full h-6 w-6 flex items-center justify-center bg-gray-100">
-              <IoEye className="text-lg text-primary-500" size={16} />
-            </div>
-          </Link>
+          {
+            !isDetails ? (
+              <Link to={`/dashboard/task/${task._id}`}>
+                <div className="text-blue-500 rounded-full h-6 w-6 flex items-center justify-center bg-gray-100">
+                  <IoEye className="text-lg text-primary-500" size={16} />
+                </div>
+              </Link>
+            ) : (
+              <div className="flex gap-2">
+                <Chip color="default" size="sm" variant="flat">
+                  {startTime}
+                </Chip>
+                <Chip color="default" size="sm" variant="flat">
+                  {dueTime}
+                </Chip>
+              </div>
+            )
+          }
         </div>
       </CardFooter>
     </Card>

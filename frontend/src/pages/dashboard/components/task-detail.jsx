@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom"
 import axios from "axios"
 import { useEffect, useState } from "react"
 import useAuth from "../../../hooks/use-auth"
+import TaskWrapper from "./task-wrapper"
 
 const TaskDetails = () => {
     const [task, setTask] = useState({})
@@ -28,13 +29,12 @@ const TaskDetails = () => {
 
     return (
         <div className="flex items-center justify-center w-full h-full">
-            <div className="w-full max-w-3xl p-4 bg-white shadow-md rounded-md">
+            <div className="w-full max-w-3xl p-4 space-y-4">
                 {loading ? (
                     <div>Loading...</div>
                 ) : (
-                    <div>
-                        <h1 className="text-2xl font-bold">{task.title}</h1>
-                        <p className="text-lg text-default-400">{task.description}</p>
+                    <div className="flex flex-col gap-4">
+                        <TaskWrapper task={task} isDetails />
                     </div>
                 )}
             </div>

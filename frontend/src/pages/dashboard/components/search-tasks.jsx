@@ -6,12 +6,14 @@ import {
   ModalFooter,
   ModalBody,
   Button,
-  useDisclosure
+  useDisclosure,
+  Chip
 } from "@nextui-org/react";
 import { useState } from "react";
-import { CgSearch } from "react-icons/cg";
+import { CgArrowAlignH, CgArrowBottomRight, CgArrowRight, CgSearch } from "react-icons/cg";
 import axios from "axios";
 import useAuth from "../../../hooks/use-auth";
+import { Link } from "react-router-dom";
 
 const SearchTasks = () => {
 
@@ -89,16 +91,21 @@ const SearchTasks = () => {
                     tasks && tasks.length > 0 ? (
                       <div className="flex flex-col gap-2">
                         {tasks.map(task => (
-                          <div key={task._id} className="flex items-center justify-between p-2 bg-default-200/50 rounded-lg shadow-sm">
+                          <Link to={`/dashboard/task/${task._id}`} className="w-full" key={task._id}>
+                          <div className="flex items-center justify-between p-2 bg-default-200/50 rounded-lg shadow-sm">
                             <div className="flex flex-col gap-1">
                               <p className="text-lg font-semibold">{task.title}</p>
                               <p className="text-sm font-light">{task.description}</p>
                             </div>
-                            <div className="flex flex-col gap-1">
-                              {/* <p className="text-sm font-semibold">{task.dueDate}</p> */}
-                              <p className="text-sm font-semibold">{task.priority}</p>
+                            <div className="flex flex-col gap-1 justify-end items-end">
+                              <div className="flex items-center gap-1">
+                              <Chip color="success">{task.status}</Chip>
+                              <Chip color="warning">{task.priority}</Chip>
+                              </div>
+                              <CgArrowRight className="text-xl text-slate-400" />
                             </div>
                           </div>
+                          </Link>
                         ))}
                       </div>
                     ) : (
