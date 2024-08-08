@@ -59,7 +59,7 @@ const DashboardNav = () => {
                     name={user.username}
                     description={user.email}
                     avatarProps={{
-                        src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
+                        src: user.avatar,
                     }}
                 />
                 </NavbarItem>

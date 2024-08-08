@@ -10,10 +10,12 @@ import {
   Chip,
   Tooltip,
 } from '@nextui-org/react'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { today, getLocalTimeZone } from "@internationalized/date";
 import { IoEye, IoWarning } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
+import useAuth from '../../../hooks/use-auth';
+import axios from 'axios';
 
 const statusColorMap = {
   completed: "success",
@@ -22,66 +24,38 @@ const statusColorMap = {
 };
 
 const CalendarView = () => {
+  const [tasks, setTasks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const { auth } = useAuth();
+  const userId = auth.user.id;
+
   let defaultDate = today(getLocalTimeZone());
   let [focusedDate, setFocusedDate] = useState(defaultDate);
-
-  // TODO: fetch task dates from the server
-  let taskDates = [
-    {
-      task: [
-        "Task 1",
-        "Task 2"
-      ],
-      date: {
-        "calendar": {
-          "identifier": "gregory"
-        },
-        "era": "AD",
-        "year": 2024,
-        "month": 8,
-        "day": 7
-      }
-    },
-    {
-      task: [
-        "Task 1",
-        "Task 2"
-      ],
-      date: {
-        "calendar": {
-          "identifier": "gregory"
-        },
-        "era": "AD",
-        "year": 2024,
-        "month": 8,
-        "day": 14
-      }
-    },
-    {
-      task: "Task 3",
-      date: {
-        "calendar": {
-          "identifier": "gregory"
-        },
-        "era": "AD",
-        "year": 2024,
-        "month": 8,
-        "day": 23
-      },
-    },
-    {
-      task: "Task 4",
-      date: {
-        "calendar": {
-          "identifier": "gregory"
-        },
-        "era": "AD",
-        "year": 2024,
-        "month": 8,
-        "day": 24
+  
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/tasks/${userId}`);
+        setTasks(response.data.tasks);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
       }
     }
-  ];
+
+    fetchTasks();
+  }, []);
+  
+  // task dates from the tasks fetched from the server
+
+  const taskDates = tasks.map(task => {
+    return {
+      date: task.dueDate
+    }
+  });
 
   const isNotATaskDate = (date) => {
     let dateToCheck = {
@@ -109,7 +83,7 @@ const CalendarView = () => {
         return (
           <div className="flex flex-col">
             <p className="text-bold text-sm capitalize">{cellValue}</p>
-            <p className="text-bold text-sm capitalize text-default-400">{task.title}</p>
+            <p className="text-bold text-sm capitalize text-default-400 truncate">{task.description}</p>
           </div>
         );
       case "startDate":
@@ -121,13 +95,13 @@ const CalendarView = () => {
             <p className="text-bold text-sm capitalize text-default-400">{startDate}</p>
           </div>
         );
-      case "endDate":
-        const endDate = `${task.endDate.year}-${task.endDate.month}-${task.endDate.day}`;
-        const cellEndDate = `${cellValue.year}-${cellValue.month}-${cellValue.day}`;
+      case "dueDate":
+        const dueDate = `${task.dueDate.year}-${task.dueDate.month}-${task.dueDate.day}`;
+        const cellDueDate = `${cellValue.year}-${cellValue.month}-${cellValue.day}`;
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-sm capitalize">{cellEndDate}</p>
-            <p className="text-bold text-sm capitalize text-default-400">{endDate}</p>
+            <p className="text-bold text-sm capitalize">{cellDueDate}</p>
+            <p className="text-bold text-sm capitalize text-default-400">{dueDate}</p>
           </div>
         );
       case "status":
@@ -148,7 +122,7 @@ const CalendarView = () => {
         return (
           <div className="relative flex items-center justify-center gap-2">
             <Tooltip content="Details">
-              <Link to={`/dashboard/tasks/${task.id}`}>
+              <Link to={`/dashboard/task/${task._id}`}>
                 <IoEye className="cursor-pointer text-lg text-primary-500" />
               </Link>
             </Tooltip>
@@ -199,12 +173,11 @@ const CalendarView = () => {
               )}
             </TableHeader>
             <TableBody items={tasks} className="h-full overflow-y-auto">
-              {/* render the tasks whose end date is same as the focused date */}
               {
                 tasks.filter(task => {
-                  return task.endDate.year === focusedDate.year && task.endDate.month === focusedDate.month && task.endDate.day === focusedDate.day
+                  return task.dueDate.year === focusedDate.year && task.dueDate.month === focusedDate.month && task.dueDate.day === focusedDate.day
                 }).map((item) => (
-                  <TableRow key={item.id}>
+                  <TableRow key={item._id}>
                     {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
                   </TableRow>
                 ))
@@ -220,133 +193,10 @@ const CalendarView = () => {
 const columns = [
   { name: "TASKS", uid: "title" },
   { name: "START DATE", uid: "startDate" },
-  { name: "END DATE", uid: "endDate" },
+  { name: "DUE DATE", uid: "dueDate" },
   { name: "STATUS", uid: "status" },
   { name: "PRIORITY", uid: "priority" },
   { name: "ACTIONS", uid: "actions" }
-];
-
-const tasks = [
-  {
-    id: 1,
-    title: "Task 1",
-    startDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 7
-    },
-    endDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 7
-    },
-    status: "completed",
-    priority: 8,
-  },
-  {
-    id: 2,
-    title: "Task 2",
-    startDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 7
-    },
-    endDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 7
-    },
-    status: "completed",
-    priority: 8,
-  },
-  {
-    id: 3,
-    title: "Task 3",
-    startDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 23
-    },
-    endDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 23
-    },
-    status: "progress",
-    priority: 10,
-  },
-  {
-    id: 4,
-    title: "Task 4",
-    startDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 24
-    },
-    endDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 24
-    },
-    status: "pending",
-    priority: 4,
-  },
-  {
-    id: 5,
-    title: "Task 5",
-    startDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 24
-    },
-    endDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 24
-    },
-    status: "pending",
-    priority: 1,
-  }
 ];
 
 export default CalendarView;
