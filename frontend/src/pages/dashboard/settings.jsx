@@ -2,7 +2,9 @@ import React from 'react'
 
 const Settings = () => {
   return (
-    <div>Settings</div>
+    <div className="flex h-screen bg-neutral-100 w-full">
+      Settings Page
+    </div>
   )
 }
 

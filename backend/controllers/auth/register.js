@@ -12,8 +12,6 @@ const register = ("/register", async (req, res) => {
             return res.status(400).json({ message: "Please enter all fields", success: false });
         }
 
-        console.log(username, password, email);
-
         // Check for existing user
         const user = await User.findOne({ username, email });
 
@@ -30,8 +28,6 @@ const register = ("/register", async (req, res) => {
             email,
             password: hashedPassword,
         });
-
-        console.log(newUser);
 
         await newUser.save();
 

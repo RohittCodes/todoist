@@ -1,6 +1,4 @@
 import {
-  Calendar,
-  Divider,
   Table,
   TableHeader,
   TableBody,
@@ -11,10 +9,12 @@ import {
   Tooltip,
   Button,
 } from '@nextui-org/react'
-import { useState, useCallback } from 'react'
-import { today, getLocalTimeZone } from "@internationalized/date";
-import { IoEye, IoWarning } from 'react-icons/io5';
+import { useState, useCallback, useEffect } from 'react'
+import { IoEye } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import useAuth from '../../../hooks/use-auth';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 const statusColorMap = {
   completed: "success",
@@ -23,6 +23,28 @@ const statusColorMap = {
 };
 
 const TasksView = () => {
+
+  const [tasks, setTasks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { auth } = useAuth();
+  const userId = auth.user.id;
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/tasks/${userId}`);
+        setTasks(response.data.tasks);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchTasks();
+  }, []);
+
   const renderCell = useCallback((task, columnKey) => {
     const cellValue = task[columnKey];
 
@@ -31,7 +53,7 @@ const TasksView = () => {
         return (
           <div className="flex flex-col">
             <p className="text-bold text-sm capitalize">{cellValue}</p>
-            <p className="text-bold text-sm capitalize text-default-400">{task.title}</p>
+            <p className="text-bold text-sm capitalize text-default-400 truncate">{task.description}</p>
           </div>
         );
       case "startDate":
@@ -43,13 +65,13 @@ const TasksView = () => {
             <p className="text-bold text-sm capitalize text-default-400">{startDate}</p>
           </div>
         );
-      case "endDate":
-        const endDate = `${task.endDate.year}-${task.endDate.month}-${task.endDate.day}`;
-        const cellEndDate = `${cellValue.year}-${cellValue.month}-${cellValue.day}`;
+      case "dueDate":
+        const dueDate = `${task.dueDate.year}-${task.dueDate.month}-${task.dueDate.day}`;
+        const cellDueDate = `${cellValue.year}-${cellValue.month}-${cellValue.day}`;
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-sm capitalize">{cellEndDate}</p>
-            <p className="text-bold text-sm capitalize text-default-400">{endDate}</p>
+            <p className="text-bold text-sm capitalize">{cellDueDate}</p>
+            <p className="text-bold text-sm capitalize text-default-400">{dueDate}</p>
           </div>
         );
       case "status":
@@ -70,7 +92,7 @@ const TasksView = () => {
         return (
           <div className="relative flex items-center justify-center gap-2">
             <Tooltip content="Details">
-              <Link to={`/dashboard/tasks/${task.id}`}>
+              <Link to={`/dashboard/task/${task._id}`}>
                 <IoEye className="cursor-pointer text-lg text-primary-500" />
               </Link>
             </Tooltip>
@@ -83,7 +105,7 @@ const TasksView = () => {
 
   return (
   <div className="flex flex-col items-center w-full h-full">
-    <Table aria-label="Example table with custom cells" className="w-full">
+    <Table aria-label="Example table with custom cells" className="w-full h-full">
       <TableHeader columns={columns}>
         {(column) => (
           <TableColumn key={column.uid} align={column.uid === "actions" ? "center" : "start"}>
@@ -92,19 +114,32 @@ const TasksView = () => {
         )}
       </TableHeader>
       <TableBody items={tasks} className="h-full overflow-y-auto">
-        {/* render the tasks in increasing order of their priority, and then by their end date, and display only 4 tasks */}
-        {tasks.sort((a, b) => a.priority - b.priority || a.endDate.day - b.endDate.day).slice(0, 4).map((task) => (
-          <TableRow key={task.id} className="cursor-pointer hover:bg-neutral-200">
-            {columns.map((column) => (
-              <TableCell key={column.uid}>
-                {renderCell(task, column.uid)}
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
+        {
+          isLoading ? (
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell key={column.uid} align={column.uid === "actions" ? "center" : "start"}>
+                  <div className="flex items-center justify-center space-x-2">
+                    <AiOutlineLoading3Quarters className="animate-spin text-primary-500" />
+                  </div>
+                </TableCell>
+              ))}
+            </TableRow>
+          ) : (
+            tasks.sort((a, b) => a.priority - b.priority || a.dueDate - b.dueDate).slice(0, 4).map((task) => (
+              <TableRow key={task._id}>
+                {columns.map((column) => (
+                  <TableCell key={column.uid} align={column.uid === "actions" ? "center" : "start"}>
+                    {renderCell(task, column.uid)}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          )
+        }
       </TableBody>
     </Table>
-    <Link to="/dashboard/tasks" className="w-full mt-2">
+    <Link to="/dashboard/task" className="w-full mt-2">
         <Button auto className="text-white rounded-lg bg-primary-500 border border-primary-500 space-x-2 w-full">
             <IoEye size={24} />
             View All Tasks
@@ -116,135 +151,11 @@ const TasksView = () => {
 
 export default TasksView
 
-// TODO: fetch tasks from the server and display them on the timeline
 const columns = [
   { name: "TASKS", uid: "title" },
   { name: "START DATE", uid: "startDate" },
-  { name: "END DATE", uid: "endDate" },
+  { name: "DUE DATE", uid: "dueDate" },
   { name: "STATUS", uid: "status" },
   { name: "PRIORITY", uid: "priority" },
   { name: "ACTIONS", uid: "actions" }
-];
-
-const tasks = [
-  {
-    id: 1,
-    title: "Task 1",
-    startDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 7
-    },
-    endDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 7
-    },
-    status: "completed",
-    priority: 8,
-  },
-  {
-    id: 2,
-    title: "Task 2",
-    startDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 7
-    },
-    endDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 7
-    },
-    status: "completed",
-    priority: 8,
-  },
-  {
-    id: 3,
-    title: "Task 3",
-    startDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 23
-    },
-    endDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 23
-    },
-    status: "progress",
-    priority: 10,
-  },
-  {
-    id: 4,
-    title: "Task 4",
-    startDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 24
-    },
-    endDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 24
-    },
-    status: "pending",
-    priority: 4,
-  },
-  {
-    id: 5,
-    title: "Task 5",
-    startDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 24
-    },
-    endDate: {
-      calendar: {
-        identifier: "gregory"
-      },
-      era: "AD",
-      year: 2024,
-      month: 8,
-      day: 24
-    },
-    status: "pending",
-    priority: 1,
-  }
 ];

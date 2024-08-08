@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import Logo from '../assets/logo.svg'
 import { Listbox, ListboxItem, Button } from '@nextui-org/react'
-import { MdSpaceDashboard } from 'react-icons/md'
+import { MdExplore, MdSpaceDashboard } from 'react-icons/md'
 import { IoCheckmarkDoneCircle, IoSettings } from 'react-icons/io5'
 import { RiProgress2Line } from 'react-icons/ri'
 import LogoutButton from '../components/logout-button'
@@ -18,17 +18,11 @@ const Sidebar = () => {
             link2: "/dashboard/"
         },
         {
-            title: "Completed",
-            icon: <IoCheckmarkDoneCircle />,
-            link: "/dashboard/completed",
-            link2: "/dashboard/completed/"
-        },
-        {
-            title: "In Progress",
-            icon: <RiProgress2Line />,
-            link: "/dashboard/in-progress",
-            link2: "/dashboard/in-progress/"
-        },
+            title: "Explore Tasks",
+            icon: <MdExplore />,
+            link: "/dashboard/task",
+            link2: "/dashboard/task/"
+        }
     ]
 
     return (
